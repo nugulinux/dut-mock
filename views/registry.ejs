@@ -266,7 +266,7 @@
       let tmp = `${ttlMax} + ${beta} * (${Math.log(r)}) - ${ttlMax} * (${failCount} / ${totalCount})`;
       let result = Math.floor(eval(tmp));
       let max = (result > retryDelay) ? result : retryDelay;
-      let output = `<div><code>${tmp}</code><code class="float-right">= max(${result}, ${retryDelay}) = ${max}</code></div>`;
+      let output = `<div><code>Random ${r.toFixed(1)}: ${tmp}</code><code class="float-right">= max(${result}, ${retryDelay}) = ${max}</code></div>`;
       text = text + output;
     });
 
