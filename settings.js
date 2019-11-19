@@ -4,6 +4,7 @@ const files = {
   policy: './services/registry/policy.json',
   config: './services/registry/config.json',
   serverList: './services/server/list.json',
+  template: './services/server/templates.json'
 };
 
 if (fs.existsSync(files.policy) === false) {
@@ -14,6 +15,11 @@ if (fs.existsSync(files.policy) === false) {
 if (fs.existsSync(files.config) === false) {
   console.log('Generate registry config file');
   fs.copyFileSync('./services/registry/default_config.json', files.config);
+}
+
+if (fs.existsSync(files.template) === false) {
+  console.log('Generate templates file');
+  fs.copyFileSync('./services/server/default_templates.json', files.template);
 }
 
 if (fs.existsSync(files.serverList) === false) {
