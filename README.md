@@ -58,7 +58,7 @@ NUGU SDK for Linux의 Registry URL 설정을 변경해 주세요.
 | registry/default_policy.json | Registry 기본 Policy 정보 |
 | server/config_default.json | 토큰에 대해 항상 성공(200) 리턴  |
 | server/config_reject.json | 토큰에 대해 항상 실패(401) 리턴 |
-| server/templates.json | Directive 예제 모음 |
+| server/default_templates.json | Directive 기본 예제 모음 |
 
 ### 임시로 생성되는 파일들
 
@@ -67,6 +67,7 @@ NUGU SDK for Linux의 Registry URL 설정을 변경해 주세요.
 | registry/config.json | Registry 설정 정보 |
 | registry/policy.json | Registry Policy 정보 |
 | server/list.json | 생성한 서버 목록 |
+| server/templates.json | Directive 예제 모음 |
 
 ## 주의
 

@@ -2,6 +2,7 @@
 services/registry/policy.json
 services/registry/config.json
 services/server/list.json
+services/server/templates.json
 
 public/javascripts/popper.min.js
 public/javascripts/bootstrap.min.js
