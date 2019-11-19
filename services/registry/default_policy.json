@@ -1,0 +1,31 @@
+{
+  "healthCheckPolicy": {
+    "accumulationTime": 3600000,
+    "beta": 40000,
+    "healthCheckTimeout": 10000,
+    "retryCountLimit": 4,
+    "retryDelay": 60000,
+    "ttl": 120000,
+    "ttlMax": 300000
+  },
+  "serverPolicies": [
+    {
+      "address": "127.0.0.1",
+      "charge": "Normal",
+      "connectionTimeout": 5000,
+      "hostname": "127.0.0.1",
+      "port": 8081,
+      "protocol": "H2C",
+      "retryCountLimit": 10
+    },
+    {
+      "address": "127.0.0.1",
+      "charge": "Normal",
+      "connectionTimeout": 5000,
+      "hostname": "127.0.0.1",
+      "port": 8082,
+      "protocol": "H2C",
+      "retryCountLimit": 10
+    }
+  ]
+}

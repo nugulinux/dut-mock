@@ -1,0 +1,111 @@
+<%- include header.ejs %>
+
+<% if (server.list.length == 0) { %>
+
+<div class="jumbotron">
+  <h1 class="display-4">No servers.</h1>
+  <form action="/server" method="post">
+    <button type="submit" class="btn btn-success shadow mr-2">Add gateway server</button>
+  </form>
+</div>
+
+<% } else { %>
+
+<div class="row">
+  <div class="col-sm-12 mb-3">
+    <form class="form-inline" action="/server" method="post">
+      <button type="submit" class="btn btn-success shadow mr-2">Add gateway server</button>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <% server.list.forEach(function(item){ %>
+
+  <div class="col-sm-6">
+    <div class="card mb-4 shadow">
+      <% if (item.child) { %>
+      <div class="card-header text-white bg-success">
+        <div class="float-left">Running</div>
+      </div>
+      <% } else { %>
+      <div class="card-header">
+        <div class="float-left">Not running</div>
+      </div>
+      <% } %>
+
+      <div class="card-body">
+        <div class="form-group row">
+          <label for="port" class="col-sm-2 col-form-label">
+            Port
+          </label>
+          <div class="col-sm-10">
+            <input type="number" class="form-control" id="port" name="port" placeholder="80" value="<%=item.port%>"
+              disabled />
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="token" class="col-sm-2 col-form-label">
+            Config
+          </label>
+          <div class="col-sm-10">
+            <select class="form-control" id="selectConfig" name="config" aria-describedby="tokenHelpInline"
+              <%- item.child != null ? 'disabled': '' %>>
+
+              <% server.configs.forEach(function(config_item){ %>
+              <option value="<%=config_item.name%>" <%- config_item.name == item.config ? 'selected': '' %>>
+                <%=config_item.desc%></option>
+              <% }) %>
+
+            </select>
+            <small id="tokenHelpInline" class="text-muted">
+              동작에 대한 설정
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <% if (item.child) { %>
+
+      <div class="card-footer text-right">
+        <form class="float-right ml-2" action="/server/<%=item.port%>/stop" method="post">
+          <button type="submit" class="btn btn-primary">Stop</button>
+        </form>
+        <a class="btn btn-primary" target="_blank" href="<%=url.protocol%>//<%=url.hostname%>:<%=item.webport%>">Open
+          control page</a>
+      </div>
+
+      <% } else { %>
+
+      <div class="card-footer text-right">
+        <form class="float-right ml-2" action="/server/<%=item.port%>/start" method="post" id="formStart">
+          <input type="hidden" name="config" value="" id="txtConfig" />
+          <button type="submit" class="btn btn-primary">Start</button>
+        </form>
+
+        <form class="float-right ml-2" action="/server/<%=item.port%>" method="post">
+          <input type="hidden" name="_method" value="delete" />
+          <button type="submit" class="btn btn-danger">Remove</button>
+        </form>
+      </div>
+
+      <% } %>
+    </div>
+  </div>
+
+  <% }) %>
+
+</div>
+
+<% } %>
+
+<%- include footer_scripts.ejs %>
+
+<script type="text/javascript">
+  $('#formStart').submit(function (event) {
+    $('#txtConfig').val($('#selectConfig').val());
+  })
+</script>
+
+<%- include footer.ejs %>

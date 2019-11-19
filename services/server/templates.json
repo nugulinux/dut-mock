@@ -1,0 +1,52 @@
+[
+    {
+        "namespace": "System",
+        "directives": [
+            {
+                "name": "Noop",
+                "description": "의미 없는 응답",
+                "version": "1.0",
+                "payload": {}
+            },
+            {
+                "name": "HandoffConnection",
+                "description": "다른 서버로 옮겨야 함",
+                "version": "1.0",
+                "payload": {
+                    "protocol": "H2C",
+                    "domain": "127.0.0.1",
+                    "hostname": "127.0.0.1",
+                    "port": 8082,
+                    "retryCountLimit": 10,
+                    "connectionTimeout": 5000,
+                    "charge": "Normal"
+                }
+            }
+        ]
+    },
+    {
+        "namespace": "TTS",
+        "directives": [
+            {
+                "name": "Speak",
+                "version": "1.0",
+                "description": "TTS 음성 데이터 재생 시작",
+                "payload": {
+                    "playServiceId": "xxx",
+                    "sourceType": "ATTACHMENT",
+                    "text": "안녕하세요",
+                    "token": "1234"
+                }
+            },
+            {
+                "name": "Stop",
+                "version": "1.0",
+                "description": "TTS 음성 데이터 재생 종료",
+                "payload": {
+                    "playServiceId": "xxx",
+                    "token": "1234"
+                }
+            }
+        ]
+    }
+]

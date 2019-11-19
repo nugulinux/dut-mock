@@ -1,0 +1,174 @@
+<%- include header.ejs %>
+
+<div class="row">
+
+    <nav class="col-sm-3 d-none d-md-block sidebar border-right">
+        <div class="sidebar-sticky">
+            <div class="card border-0 rounded-0">
+                <div class="card-header border-0 shadow">
+                    <div class="float-left">Directives</div>
+                    <div class="float-right">
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" type="button">
+                                default
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body sidebar-main bg-light">
+
+                    <% templates.forEach(function(interface){ %>
+
+                    <button class="btn btn-dark btn-block bg-info border-0 text-left shadow rounded-0" type="button"
+                        data-toggle="collapse" data-target="#dir_<%=interface.namespace%>" aria-expanded="false"
+                        aria-controls="dir_<%=interface.namespace%>"><%=interface.namespace%></button>
+                    <div class="row collapse show" id="dir_<%=interface.namespace%>">
+                        <div class="col bg-secondary">
+                            <% interface.directives.forEach(function(directive) { %>
+
+                            <button class="btn btn-light btn-block text-left rounded-0 shadow" type="button"
+                                data-toggle="collapse" data-target="#dir_<%=interface.namespace%>_<%=directive.name%>"
+                                aria-expanded="false"
+                                aria-controls="dir_<%=interface.namespace%>_<%=directive.name%>">&nbsp;&nbsp;<%=directive.name%>
+                                (v<%=directive.version%>)</button>
+
+                            <div class="row collapse text-white border-bottom border-secondary"
+                                id="dir_<%=interface.namespace%>_<%=directive.name%>">
+                                <div class="col">
+                                    <div class="p-2 small">
+                                        <div class="row">
+                                            <div class="col-sm-10"><%=directive.description%></div>
+                                            <div class="col-sm-2">
+                                                <button class="btn btn-primary float-right mb-1"
+                                                    onclick="add_to_composer('<%=interface.namespace%>', '<%=directive.name%>', '<%=directive.version%>')">&gt;&gt;</button>
+                                            </div>
+                                        </div>
+                                        <pre id="pre_<%=interface.namespace%>_<%=directive.name%>"
+                                            class="col bg-dark p-1 m-0 rounded border text-white"><%=JSON.stringify(directive.payload, null, 2)%></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                    </div>
+
+                    <% }) %>
+
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="col-sm-9 " role="control">
+        <div class="row">
+            <div class="col">
+                <div class="card border-0 rounded-0">
+                    <div class="card-header border-0">
+                        <div class="float-left">Composer</div>
+                        <div class="float-right">
+                            <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse"
+                                data-target="#composer" aria-expanded="false" aria-controls="composer">Toggle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col border-bottom">
+                <div class="card border-0 rounded-0 collapse show" id="composer">
+                    <div class="card-body">
+                        <form method="post" action="/send" id="formSend">
+                            <textarea id="txtDirectives" name="directives" class="d-none"></textarea>
+                            <pre id="json-display" class=""></pre>
+                            <button type="submit" class="btn btn-primary float-right">Send</button>
+                            <button type="button" id="btnClear" class="btn btn-primary">Clear</button>
+                            <button type="button" id="btnCheck" class="btn btn-primary">Check</button>
+                            <span id="lblCheck" class="text-secondary"></span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card border-0 rounded-0">
+                    <div class="card-header border-0">
+                        <div class="float-left">Logs</div>
+                        <div class="float-right">
+                            <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse"
+                                data-target="#logs" aria-expanded="false" aria-controls="logs">Toggle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col border-bottom">
+                <div class="card border-0 rounded-0 collapse show" id="logs">
+                    <div class="card-body">
+                        ... TODO ...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<%- include footer_scripts.ejs %>
+
+<script src="javascripts/jquery.json-editor.min.js"></script>
+<script type="text/javascript">
+    const default_composer_data = { directives: [] };
+
+    let composer_data = JSON.parse(JSON.stringify(default_composer_data));
+
+    const editor = new JsonEditor('#json-display', composer_data);
+
+    function add_to_composer(dir_namespace, dir_name, dir_version) {
+        const name = '#pre_' + dir_namespace + '_' + dir_name;
+        const obj = $(name);
+        const directive = {
+            "header": {
+                "dialogRequestId": "1055e49d02c0479ce236c085ce1ff2cb",
+                "messageId": "d4027439c9a16d72",
+                "name": dir_name,
+                "namespace": dir_namespace,
+                "version": dir_version
+            },
+            "payload": JSON.parse(obj.html())
+        }
+        composer_data.directives.push(directive);
+        editor.load(composer_data);
+    }
+
+    function check_json() {
+        try {
+            let data = editor.get();
+            $('#lblCheck').text("OK.");
+            return 0;
+        } catch (error) {
+            $('#lblCheck').text(error);
+            return -1;
+        }
+    }
+
+    $('#formSend').submit(function (event) {
+        if (check_json() < 0) {
+            event.preventDefault();
+        } else {
+            let data = editor.get();
+            $('#txtDirectives').val(JSON.stringify(data, null, 2));
+        }
+    })
+
+    $('#btnClear').click(function () {
+        composer_data = JSON.parse(JSON.stringify(default_composer_data));
+        editor.load(composer_data);
+        check_json();
+    })
+
+    $('#btnCheck').click(check_json);
+
+</script>
+
+<%- include footer.ejs %>

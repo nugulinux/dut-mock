@@ -1,0 +1,278 @@
+<%- include header.ejs %>
+
+<form method="post" action="/registry/start">
+  <div class="card mb-3 shadow">
+    <div class="card-header text-white bg-success">Registry control</div>
+    <div class="card-body">
+      <div class="form-group row">
+        <label for="ipAddress" class="col-sm-2 col-form-label">
+          IP Address
+        </label>
+        <div class="col-sm-10">
+          <% address.forEach(function(addr){ %>
+          <div class="badge badge-secondary"><%= addr.address %></div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="port" class="col-sm-2 col-form-label">
+          Port
+        </label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" id="port" name="port" placeholder="80"
+            value="<%= registry.config.port %>" <%- registry.child != null ? 'disabled': '' %> />
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="token" class="col-sm-2 col-form-label">
+          Token response code
+        </label>
+        <div class="col-sm-10">
+          <select class="form-control" id="token" name="token" aria-describedby="tokenHelpInline"
+            <%- registry.child != null ? 'disabled': '' %>>
+            <option value="200" <%- registry.config.token == "200" ? 'selected': '' %>>200</option>
+            <option value="401" <%- registry.config.token == "401" ? 'selected': '' %>>401</option>
+          </select>
+          <small id="tokenHelpInline" class="text-muted">
+            토큰에 대해 <b>200</b>(성공) 또는 <b>401</b>(실패) 처리.
+          </small>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer text-right">
+      <% if (registry.child) { %>
+      <a class="btn btn-primary" href="/registry/stop">Stop</a>
+      <% } else { %>
+      <button type="submit" class="btn btn-primary">Start</button>
+      <% } %>
+    </div>
+  </div>
+</form>
+
+<form method="post" action="/registry/servers" id="formServerPolicies">
+  <div class="card mb-3 shadow">
+    <div class="card-header text-white bg-info">Settings - serverPolicies</div>
+    <div class="card-body">
+      <textarea id="serverPolicies" name="serverPolicies" class="d-none" rows="<%= lines %>">
+<%= serverPolicies %></textarea>
+      <pre id="json-display" class=""></pre>
+    </div>
+    <div class="card-footer text-right">
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </div>
+</form>
+
+<div class="card mb-3 shadow">
+  <div class="card-header text-white bg-info">
+    Settings - healthCheckPolicy
+  </div>
+  <div class="card-body">
+    <form method="post" action="/registry/health" id="formHealth">
+      <div class="form-group row">
+        <label for="accumulationTime" class="col-sm-2 col-form-label">
+          accumulationTime
+        </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="number" class="form-control" id="accumulationTime" name="accumulationTime"
+              placeholder="3600000" aria-describedby="accumulationTimeHelpInline"
+              value="<%= registry.policy.healthCheckPolicy.accumulationTime %>" />
+            <div class="input-group-append">
+              <span class="input-group-text">milliseconds</span>
+            </div>
+          </div>
+          <small id="accumulationTimeHelpInline" class="text-muted">
+            누적 시간 동안 헬스체크 성공 통계 작성
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="beta" class="col-sm-2 col-form-label">
+          beta
+        </label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" id="beta" name="beta" placeholder="300000"
+            value="<%= registry.policy.healthCheckPolicy.beta %>" />
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="healthCheckTimeout" class="col-sm-2 col-form-label">
+          healthCheckTimeout
+        </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="number" class="form-control" id="healthCheckTimeout" name="healthCheckTimeout"
+              placeholder="10000" value="<%= registry.policy.healthCheckPolicy.healthCheckTimeout %>" />
+            <div class="input-group-append">
+              <span class="input-group-text">milliseconds</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="retryCountLimit" class="col-sm-2 col-form-label">
+          retryCountLimit
+        </label>
+        <div class="col-sm-10">
+          <input type="number" class="form-control" id="retryCountLimit" name="retryCountLimit" placeholder="4"
+            aria-describedby="retryCountLimitHelpInline"
+            value="<%= registry.policy.healthCheckPolicy.retryCountLimit %>" />
+          <small id="retryCountLimitHelpInline" class="text-muted">
+            retry_count_limit까지 health check 후 실패하면 접속 해제
+          </small>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="retryDelay" class="col-sm-2 col-form-label">
+          retryDelay
+        </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="number" class="form-control" id="retryDelay" name="retryDelay" placeholder="10000"
+              value="<%= registry.policy.healthCheckPolicy.retryDelay %>" />
+            <div class="input-group-append">
+              <span class="input-group-text">milliseconds</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="ttl" class="col-sm-2 col-form-label">
+          ttl
+        </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="number" class="form-control" id="ttl" name="ttl" placeholder="120000"
+              value="<%= registry.policy.healthCheckPolicy.ttl %>" />
+            <div class="input-group-append">
+              <span class="input-group-text">milliseconds</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="ttlMax" class="col-sm-2 col-form-label">
+          ttlMax
+        </label>
+        <div class="col-sm-10">
+          <div class="input-group">
+            <input type="number" class="form-control" id="ttlMax" name="ttlMax" placeholder="300000"
+              value="<%= registry.policy.healthCheckPolicy.ttlMax %>" />
+            <div class="input-group-append">
+              <span class="input-group-text">milliseconds</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer text-right">
+    <button type="button" id="btnSave" class="btn btn-primary float-right">Save</button>
+  </div>
+</div>
+
+<div class="card mb-3 bg-light shadow">
+  <div class="card-header">
+    Health check 계산기
+  </div>
+  <div class="card-body">
+    <div class="form-group row">
+      <label for="cumulativeFailureCount" class="col-sm-3 col-form-label">
+        cumulativeFailureCount
+      </label>
+      <div class="col-sm-9">
+        <div class="input-group">
+          <input type="number" class="form-control" id="cumulativeFailureCount" name="cumulativeFailureCount"
+            value="0" />
+        </div>
+        <small class="text-muted">
+          누적 Health check 실패 카운트
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="cumulativeCount" class="col-sm-3 col-form-label">
+        cumulativeCount
+      </label>
+      <div class="col-sm-9">
+        <div class="input-group">
+          <input type="number" class="form-control" id="cumulativeCount" name="cumulativeCount" value="12" />
+        </div>
+        <small class="text-muted">
+          누적 Health check 카운트
+        </small>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <button type="button" id="btnCalculate" class="btn btn-primary float-right">Calculate</button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div id="txtHealthResult">
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="card-text">
+      <code>max( ttl_max + beta * log_e(0 &lt; rand() &lt;= 1) - ttl_max * (누적 헬스체크 실패 카운트 / 누적 헬스체크 시도 카운트), retry_delay )</code>
+      <footer class="blockquote-footer text-right">
+        device-gateway-registry API specification
+      </footer>
+    </div>
+  </div>
+</div>
+
+<%- include footer_scripts.ejs %>
+
+<script src="javascripts/jquery.json-editor.min.js"></script>
+<script type="text/javascript">
+  const editor = new JsonEditor('#json-display', JSON.parse($('#serverPolicies').val()));
+
+  $('#formServerPolicies').submit(function (event) {
+    $('#serverPolicies').val(JSON.stringify(editor.get(), null, 2));
+  })
+
+
+  $('#btnSave').click(function () {
+    $('#formHealth').submit();
+  })
+
+  $('#btnCalculate').click(function () {
+    let randList = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+    const failCount = $('#cumulativeFailureCount').val();
+    const totalCount = $('#cumulativeCount').val();
+    const ttlMax = $('#ttlMax').val();
+    const beta = $('#beta').val();
+    const retryDelay = $('#retryDelay').val();
+    let text = "<hr/>";
+
+    randList.forEach((r) => {
+      let tmp = `${ttlMax} + ${beta} * (${Math.log(r)}) - ${ttlMax} * (${failCount} / ${totalCount})`;
+      let result = Math.floor(eval(tmp));
+      let max = (result > retryDelay) ? result : retryDelay;
+      let output = `<div><code>${tmp}</code><code class="float-right">= max(${result}, ${retryDelay}) = ${max}</code></div>`;
+      text = text + output;
+    });
+
+    $('#txtHealthResult').html(text);
+  })
+
+</script>
+
+<%- include footer.ejs %>
