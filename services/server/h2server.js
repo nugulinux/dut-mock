@@ -22,12 +22,12 @@ const h2server = {
     const data = JSON.stringify({ directives: listDirectives }, null, 2);
 
     const output = `
-  Content-Type: application/json;\r
-  Content-Length: ${data.length}\r
-  \r
-  ${data}\r
-  \r
-  --${h2server.boundary}\r`;
+Content-Type: application/json;\r
+Content-Length: ${data.length}\r
+\r
+${data}\r
+\r
+--${h2server.boundary}\r`;
 
     console.log('sendDirectives:\n', output);
 
