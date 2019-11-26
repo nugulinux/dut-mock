@@ -40,7 +40,7 @@
             Port
           </label>
           <div class="col-sm-10">
-            <input type="number" class="form-control" id="port" name="port" placeholder="80" value="<%=item.port%>"
+            <input type="number" class="form-control" name="port" placeholder="80" value="<%=item.port%>"
               disabled />
           </div>
         </div>
@@ -50,7 +50,7 @@
             Config
           </label>
           <div class="col-sm-10">
-            <select class="form-control" id="selectConfig" name="config" aria-describedby="tokenHelpInline"
+            <select class="form-control" id="selectConfig<%=item.port%>" name="config" aria-describedby="tokenHelpInline"
               <%- item.child != null ? 'disabled': '' %>>
 
               <% server.configs.forEach(function(config_item){ %>
@@ -79,8 +79,8 @@
       <% } else { %>
 
       <div class="card-footer text-right">
-        <form class="float-right ml-2" action="/server/<%=item.port%>/start" method="post" id="formStart">
-          <input type="hidden" name="config" value="" id="txtConfig" />
+        <form class="float-right ml-2" action="/server/<%=item.port%>/start" method="post" id="formStart<%=item.port%>">
+          <input type="hidden" name="config" value="" id="txtConfig<%=item.port%>" />
           <button type="submit" class="btn btn-primary">Start</button>
         </form>
 
@@ -103,9 +103,15 @@
 <%- include footer_scripts.ejs %>
 
 <script type="text/javascript">
-  $('#formStart').submit(function (event) {
-    $('#txtConfig').val($('#selectConfig').val());
+
+  <% server.list.forEach(function(item){ %>
+
+  $('#formStart<%=item.port%>').submit(function (event) {
+    $('#txtConfig<%=item.port%>').val($('#selectConfig<%=item.port%>').val());
   })
+
+  <% }) %>
+
 </script>
 
 <%- include footer.ejs %>
