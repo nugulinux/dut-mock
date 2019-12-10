@@ -14,7 +14,7 @@
                 "version": "1.0",
                 "payload": {
                     "protocol": "H2C",
-                    "domain": "127.0.0.1",
+                    "address": "127.0.0.1",
                     "hostname": "127.0.0.1",
                     "port": 8082,
                     "retryCountLimit": 10,
