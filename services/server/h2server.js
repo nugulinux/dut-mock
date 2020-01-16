@@ -52,6 +52,7 @@ function pathV1Event(stream) {
   });
   stream.on('data', chunk => {
     console.log(`event data: ${chunk}`);
+    stream.write(`Pong ${chunk}`);
   });
   stream.on('error', code => {
     console.log('event stream error:', code);
@@ -62,9 +63,24 @@ function pathV1Event(stream) {
 function pathV1EventAttachment(stream) {
   stream.respond({ ':status': config.token });
   stream.on('error', code => {
-    console.log('event stream error:', code);
+    console.log('attachment stream error:', code);
   });
   stream.end();
+}
+
+
+function pathV1Tests(stream) {
+  stream.respond({ ':status': config.token });
+  stream.on('close', () => {
+    console.log('events stream closed');
+  });
+  stream.on('data', chunk => {
+    console.log(`events data: ${chunk}`);
+    stream.write(`[Pong ${chunk}]\n`);
+  });
+  stream.on('error', code => {
+    console.log('events stream error:', code);
+  });
 }
 
 function pathV1Directives(stream) {
@@ -125,6 +141,9 @@ server.on('stream', (stream, headers) => {
       break;
     case '/v1/event-attachment':
       pathV1EventAttachment(stream, headers);
+      break;
+    case '/v1/tests':
+      pathV1Tests(stream, headers);
       break;
     case '/v1/directives':
       pathV1Directives(stream, headers);
