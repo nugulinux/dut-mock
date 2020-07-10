@@ -52,12 +52,49 @@ function pathV1Event(stream) {
   });
   stream.on('data', chunk => {
     console.log(`event data: ${chunk}`);
-    stream.write(`Pong ${chunk}`);
   });
   stream.on('error', code => {
     console.log('event stream error:', code);
   });
   stream.end();
+}
+
+function pathV1Events(stream) {
+  stream.respond({ ':status': config.token });
+  stream.on('close', () => {
+    console.log('event stream closed');
+  });
+  stream.on('data', chunk => {
+    console.log(`event data: ${chunk}`);
+    let n = chunk.includes('--\r\n');
+    console.log(`n = ${n}`);
+    if (n) {
+      stream.write('OK');
+      stream.end();
+    }
+  });
+  stream.on('error', code => {
+    console.log('event stream error:', code);
+  });
+}
+
+function pathV2Events(stream) {
+  stream.respond({ ':status': config.token });
+  stream.on('close', () => {
+    console.log('event stream closed');
+  });
+  stream.on('data', chunk => {
+    console.log(`event data: ${chunk}`);
+    let n = chunk.includes('--\r\n');
+    console.log(`n = ${n}`);
+    if (n) {
+      //stream.write('OK');
+      //stream.end();
+    }
+  });
+  stream.on('error', code => {
+    console.log('event stream error:', code);
+  });
 }
 
 function pathV1EventAttachment(stream) {
@@ -100,8 +137,8 @@ function pathV1Directives(stream) {
 
   const noop = {
     header: {
-      dialogRequestId: '1055e49d02c0479ce236c085ce1ff2cb',
-      messageId: 'd4027439c9a16d72',
+      dialogRequestId: '0999e3ad8b014e69f74bf4c351d9c623',
+      messageId: '0999e3adaa01f5f2f35a96261b1ad6b4',
       name: 'Noop',
       namespace: 'System',
       version: '1.0',
@@ -139,6 +176,12 @@ server.on('stream', (stream, headers) => {
     case '/v1/event':
       pathV1Event(stream, headers);
       break;
+    case '/v1/events':
+      pathV1Events(stream, headers);
+      break;
+    case '/v2/events':
+      pathV2Events(stream, headers);
+      break;
     case '/v1/event-attachment':
       pathV1EventAttachment(stream, headers);
       break;
@@ -149,6 +192,12 @@ server.on('stream', (stream, headers) => {
       pathV1Directives(stream, headers);
       break;
     case '/v1/ping':
+      pathV1Ping(stream, headers);
+      break;
+    case '/v2/directives':
+      pathV1Directives(stream, headers);
+      break;
+    case '/v2/ping':
       pathV1Ping(stream, headers);
       break;
     default:

@@ -21,7 +21,15 @@
                     "connectionTimeout": 5000,
                     "charge": "Normal"
                 }
-            }
+            },
+	    {
+                "name": "ResetConnection",
+                "description": "재연결",
+                "version": "1.3",
+                "payload": {
+		    "description": "fake"
+		}
+	    }
         ]
     },
     {
